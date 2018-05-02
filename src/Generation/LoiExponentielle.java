@@ -32,12 +32,17 @@ public class LoiExponentielle extends Loi {
 		Random rdm = new Random();
 		
 		for(int i = 0; i<nbTirage; i++) {
-			sortie = 0;//stub
-			
+			sortie = -( 1 / lambda ) * Math.log( 1 - rdm.nextDouble() );
 			list.add(sortie);
 		}
 		return list;
 	}
 	
-	
+	public double getLambda() {
+		return lambda;
+	}
+
+	public void setLambda(double lambda) {
+		this.lambda = lambda;
+	}
 }
