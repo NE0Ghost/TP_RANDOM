@@ -6,35 +6,37 @@ import java.util.List;
 public class LoiUniforme extends Loi {
 	
 	
-	/**
-	 * 
-	 * @param min valeur minimale de l'intervalle
-	 * @param max valeur maximale de l'intervalle
-	 */
+/* ************************* Attributs  ************************* */
 	private double min;
 	private double max;
+
 	
+/* ************************* Constructeur  ************************* */
 	public LoiUniforme (double min, double max) {
+		//verification min < max
 		if(max<min) {
 			double temp = max;
 			max = min;
 			min = temp;
 		}
+		//assignation aux attribut
 		this.min = min;
 		this.max = max;
 	}
 	
+	/* Constructeur par défaut */
 	public LoiUniforme() {
 		this.min = 0;
 		this.max = 1;
 	}
 	
-	/**
-	 * 
-	 * @param nbTirage
-	 * @return list des tirages
+/* ************************* Méthodes  ************************* */
+	
+	/* Simulation des tirages
+	 * Remplace la liste en attribut de la superclass par le nouveau tirage
 	 */
-	public List<Double> tirage(int nbTirage) {
+	@Override
+	public void tirage(int nbTirage) {
 		
 		List<Double> list = new ArrayList<Double>(); //liste que l'on retournera
 		double sortie = 0;
@@ -47,7 +49,7 @@ public class LoiUniforme extends Loi {
 			
 			list.add(sortie);
 		}
-		return list;
+		super.setListTiree(list);
 	}
 	
 }

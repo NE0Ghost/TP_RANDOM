@@ -3,33 +3,38 @@ package Generation;
 import java.util.ArrayList;
 import java.util.List;
 
-public class LoiPoisson {
+public class LoiPoisson extends Loi {
 
+/* ************************* Attributs  ************************* */
 	private double lambda;
 	
+/* ************************* Constructeur  ************************* */
 	public LoiPoisson(double lambda) {
 		this.setLambda(lambda);
 	}
 	
+	/* Constructeur par défaut */
 	public LoiPoisson() {
 		setLambda(1);
 	}
 	
+/* ************************* Méthodes  ************************* */
 	
-	/**
-	 * 
-	 * @param nbTirage
-	 * @return list des tirages
+	/* Simulation des tirages
+	 * Remplace la liste en attribut de la superclass par le nouveau tirage
 	 */
-	public List<Double> tirage(int nbTirage) {
+	@Override
+	public void tirage(int nbTirage) {
 		
-		List<Double> list = new ArrayList<Double>(); //liste que l'on retournera
+		/* liste tirée */
+		List<Double> list = new ArrayList<Double>();
 		
+		/* init algo */
 		double L = Math.exp(-lambda);
 		double cnt; //returned value
 		double p;
 		
-		//Tirage
+		/* Tirage */
 		for( int i = 0 ; i < nbTirage ; i++ ) {
 			/* Algorithme Random poisson : Knuth */
 			cnt = 0.0;
@@ -43,9 +48,10 @@ public class LoiPoisson {
 			list.add(cnt-1);
 			/* Fin algorithme */
 		}
-		return list;
+		super.setListTiree(list);
 	}
 
+	/* Getter & Setter du paramètre Lambda */	
 	public double getLambda() {
 		return lambda;
 	}

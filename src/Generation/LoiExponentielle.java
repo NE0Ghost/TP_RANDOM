@@ -6,26 +6,25 @@ import java.util.Random;
 
 public class LoiExponentielle extends Loi {
 	
+/* ************************* Attributs  ************************* */
 	private double lambda;
 	
-	/**
-	 * 
-	 * @param lambda paramètre de la distribution
-	 */
+/* ************************* Constructeur  ************************* */
 	public LoiExponentielle(double lambda) {
 		this.lambda = lambda;
 	}
 	
+	/* Constructeur par défaut */
 	public LoiExponentielle() {
 		this.lambda = 1;
 	}
 	
-	/**
-	 * 
-	 * @param nbTirage
-	 * @return liste des tirages
+	/* ************************* Méthodes  ************************* */
+	/* Simulation des tirages
+	 * Remplace la liste en attribut de la superclass par le nouveau tirage
 	 */
-	public List<Double> tirage(int nbTirage) {
+	@Override
+	public void tirage(int nbTirage) {
 		
 		List<Double> list = new ArrayList<Double>(); //liste que l'on retournera
 		double sortie = 0;
@@ -35,9 +34,11 @@ public class LoiExponentielle extends Loi {
 			sortie = -( 1 / lambda ) * Math.log( 1 - rdm.nextDouble() );
 			list.add(sortie);
 		}
-		return list;
+		super.setListTiree(list);
 	}
 	
+	
+	/* Getter & Setter du paramètre Lambda */
 	public double getLambda() {
 		return lambda;
 	}

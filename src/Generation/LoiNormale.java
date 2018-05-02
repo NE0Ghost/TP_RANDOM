@@ -6,30 +6,29 @@ import java.util.Random;
 
 public class LoiNormale extends Loi {
 	
+/* ************************* Attributs  ************************* */
 	private double moyenne;
 	private double sigma;
 	
-	/**
-	 * 
-	 * @param moyenne
-	 * @param sigma
-	 */
+/* ************************* Constructeur  ************************* */
+	
 	public LoiNormale(double moyenne, double sigma) {
 		this.moyenne = moyenne;
 		this.sigma = sigma;
 	}
 	
+	/* Constructeur par défaut */
 	public LoiNormale() {
 		this.moyenne = 0;
 		this.sigma = 1;
 	}
 	
-	/**
-	 * 
-	 * @param nbTirage
-	 * @return liste des tirages
+/* ************************* Méthodes  ************************* */	
+	/* Simulation des tirages
+	 * Remplace la liste en attribut de la superclass par le nouveau tirage
 	 */
-	public List<Double> tirage(int nbTirage) {
+	@Override
+	public void tirage(int nbTirage) {
 		
 		List<Double> list = new ArrayList<Double>(); //liste que l'on retournera
 		double sortie = 0;
@@ -41,7 +40,7 @@ public class LoiNormale extends Loi {
 			sortie = (sortie*sigma)+moyenne;
 			list.add(sortie);
 		}
-		return list;
-	}
+		super.setListTiree(list);
+	} // Fin tirage
 	
 }
