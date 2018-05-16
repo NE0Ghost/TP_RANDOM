@@ -12,6 +12,14 @@ public abstract class Loi {
 	public List<Double> getListTiree() {
 		return listTiree;
 	}
+	
+	public List <Double> getListTireeCumulee() {
+		List<Double> list = listTiree;
+		for( int i = 1; i < listTiree.size(); i++) {
+			list.set(i, list.get(i-1)+list.get(i));
+		}
+		return list;
+	}
 
 	public void setListTiree(List<Double> listTiree) {
 		this.listTiree = listTiree;
@@ -46,8 +54,6 @@ public abstract class Loi {
 	}
 	
 /* *********************** Methodes  ************************* */
-	
-	
 	
 	public void tirage(int nbTirage) {
 		//Overrided method
