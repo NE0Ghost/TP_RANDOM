@@ -6,6 +6,8 @@ import java.util.List;
 
 
 import java.util.ArrayList;
+import java.util.Collections;
+
 import org.jfree.chart.ChartPanel; 
 import org.jfree.chart.JFreeChart; 
 import org.jfree.data.xy.XYDataset; 
@@ -21,12 +23,13 @@ import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 public class Main extends ApplicationFrame {
 	
 	public int repetition = 20;
+	public int nbMachine = 20;
 
    public Main( String applicationTitle, String chartTitle ) {
       super(applicationTitle);
       JFreeChart xylineChart = ChartFactory.createXYLineChart(
          chartTitle ,
-         "Temps" ,
+         "Temps (min)" ,
          "Evenement" ,
          createDataset() ,
          PlotOrientation.VERTICAL ,
@@ -48,7 +51,7 @@ public class Main extends ApplicationFrame {
    
    private XYDataset createDataset( ) {
       final XYSeries serie = new XYSeries( "Evenement" );
-      final XYSeries fileAttente = new XYSeries ("File d'attente");
+      final XYSeries fileAttente = new XYSeries ("Personne dans le système");
       
       
       
@@ -63,67 +66,90 @@ public class Main extends ApplicationFrame {
 	  machineACafe.tirage(this.repetition);
       List<Double> listTraitement = machineACafe.getListTiree();
 	  
-	  double time = 0.0;
-	  
       //Creation d'une liste de sortie des utilisateurs
       List<Double> sortie = new ArrayList<Double>();
-      time = 0.0;
+      double[] time = new double[this.nbMachine];
+      for( int i = 0 ; i < this.nbMachine ; i++ ) {
+    	  time[i] = 0.0;
+      }
+      
+      int index = 0;
+      boolean traite = false;
       
       for(int i = 0; i < listTraitement.size(); i++) {
-    	  if( time < 120) {
-    		      		  
-    		  if ( listArrivee.get(i) + listTraitement.get(i) < time ) {
-    			  time = time + listTraitement.get(i);
-    			  sortie.add(time); 
+    	  traite = false;
+    	  if( time[0] < 120 ) {
     		  
-    		  }   else {
-    			  time = listArrivee.get(i) + listTraitement.get(i);
-    			  sortie.add(time);
+    		  for(int j = 0 ; j < nbMachine ; j++) {
+    			  if ( listArrivee.get(i) + listTraitement.get(i) > time[j] ) {
+        			  time[j] = listArrivee.get(i) + listTraitement.get(i);
+        			  sortie.add(time[j]);
+        			  traite = true;
+        			  j = nbMachine;
+        		  }
     		  }
-
-        	  System.out.println("time sortie " + i + " : " + time);  
+    		  
+    		  if (!traite) {
+    			  index = 0;
+    			  for ( int j = 1; j < nbMachine ; j++) {
+    				  if(time[index] > time[j]) {
+    					  index = j;
+    				  }
+    			  }
+    			  time[index] = time[index] + listTraitement.get(i);
+    			  sortie.add(time[index]);
+    			  traite = true;
+    		  }
+    		  
     	  }
     	  else { 
     		  i = listTraitement.size();
     	  }
       }
-	  
+      for(int i = 0 ; i < sortie.size(); i++) { 
+    	  System.out.println(" arrivee " + i + ": " + listArrivee.get(i) );
+    	  System.out.println(" sortie " + i + ": " + sortie.get(i) ); 
+      }
+      
       // Mise en place du graph
+      double timer = 0.0;
 	  int file = 0;
 	  serie.add( 0.0, 0.0 );
 	  fileAttente.add( 0.0 , 0.0 );
+	  Collections.sort(sortie);
       
 	  int cptA = 0; //Compteur index Arrivee
 	  int cptS = 0; //Compteur index Sortie
 	  
       do {  // Entrees et sorties du système
     	  
-    	  if(listArrivee.get(cptA)<sortie.get(cptS)) {
+    	  if( listArrivee.get(cptA) < sortie.get(cptS) ) {
     		// Entree dans le système
     		  file++;
-    		  time = listArrivee.get(cptA);
-    		  fileAttente.add( time - 0.01 , file - 1.0 );
-        	  fileAttente.add( time , file );
+    		  timer = listArrivee.get(cptA);
+    		  fileAttente.add( timer - 0.01 , file - 1.0 );
+        	  fileAttente.add( timer , file );
+        	  
         	// Ajout d'une arrivee
-    	      serie.add( time - 0.01, 0.0 );
-    	      serie.add( time + 0.0, 1.0 );
-    	      serie.add( time + 0.01, 0.0 );
+    	      serie.add( timer - 0.0001, 0.0 );
+    	      serie.add( timer, 1.0 );
+    	      serie.add( timer + 0.0001, 0.0 );
     	    
     	      cptA++;
     	      
     	  } else {
     		// Sortie du système
     		  file--;
-    		  time = sortie.get(cptS);
-    		  fileAttente.add( time - 0.01 , file + 1.0 );
-        	  fileAttente.add( time , file );
+    		  timer = sortie.get(cptS);
+    		  fileAttente.add( timer - 0.01 , file + 1.0 );
+        	  fileAttente.add( timer , file );
         	  
         	  cptS++;
     	  }
       
-      } while ( time < 120 );
+      } while ( timer < 120 );
       
-      // // Calcul du temps moyen dans le système
+      /*// // Calcul du temps moyen dans le système
       double moyenneTAS = 0.0;
       for ( int i = 0; i < cptS; i++) {
     	  moyenneTAS += sortie.get(i) - listArrivee.get(i);
@@ -138,7 +164,7 @@ public class Main extends ApplicationFrame {
       } 
       moyenneIntervalle /= cptA;
       System.out.println("Temps moyen entre évènements : " + moyenneIntervalle + " minutes.");
-      
+      */
       
       final XYSeriesCollection dataset = new XYSeriesCollection();          
       dataset.addSeries( serie );
