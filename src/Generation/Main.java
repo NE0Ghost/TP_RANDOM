@@ -1,6 +1,7 @@
 package Generation;
 
 import java.awt.Color;
+import java.awt.Paint;
 import java.util.List;
 
 
@@ -23,7 +24,7 @@ import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 public class Main extends ApplicationFrame {
 	
 	public int repetition = 20;
-	public int nbMachine = 20;
+	public int nbMachine = 2;
 
    public Main( String applicationTitle, String chartTitle ) {
       super(applicationTitle);
@@ -56,7 +57,7 @@ public class Main extends ApplicationFrame {
       
       
       // Creation loi et tirage ARRIVEE
-      Loi arrivee = new LoiExponentielle(1);
+      Loi arrivee = new LoiExponentielle(2);
       this.repetition = (int) (180*((LoiExponentielle) arrivee).getLambda()/0.69314718);
 	  arrivee.tirage(this.repetition);
 	  List<Double> listArrivee = arrivee.getListTireeCumulee();
@@ -78,7 +79,7 @@ public class Main extends ApplicationFrame {
       
       for(int i = 0; i < listTraitement.size(); i++) {
     	  traite = false;
-    	  if( time[0] < 120 ) {
+    	  if( time[0] < 125 ) {
     		  
     		  for(int j = 0 ; j < nbMachine ; j++) {
     			  if ( listArrivee.get(i) + listTraitement.get(i) > time[j] ) {
@@ -111,6 +112,14 @@ public class Main extends ApplicationFrame {
     	  System.out.println(" sortie " + i + ": " + sortie.get(i) ); 
       }
       
+    /*// Calcul du temps moyen dans le système
+      double moyenneTAS = 0.0;
+      for ( int i = 0; i < this.repetition/3; i++) {
+    	  moyenneTAS += sortie.get(i) - listArrivee.get(i);
+      } 
+      moyenneTAS /= this.repetition/3;
+      System.out.println("Temps moyen dans le système : " + moyenneTAS + " minutes.");  
+      */
       // Mise en place du graph
       double timer = 0.0;
 	  int file = 0;
@@ -127,12 +136,18 @@ public class Main extends ApplicationFrame {
     		// Entree dans le système
     		  file++;
     		  timer = listArrivee.get(cptA);
-    		  fileAttente.add( timer - 0.01 , file - 1.0 );
-        	  fileAttente.add( timer , file );
+    		  if ( file > this.nbMachine ) {
+    			  
+	    		  fileAttente.add( timer - 0.0001 , file-this.nbMachine - 1.0 );
+	        	  fileAttente.add( timer , file - this.nbMachine );
         	  
+	    	  } else {
+				  fileAttente.add( timer , 0 );
+			  }
+    		  
         	// Ajout d'une arrivee
     	      serie.add( timer - 0.0001, 0.0 );
-    	      serie.add( timer, 1.0 );
+    	      serie.add( timer, -1.0 );
     	      serie.add( timer + 0.0001, 0.0 );
     	    
     	      cptA++;
@@ -141,22 +156,20 @@ public class Main extends ApplicationFrame {
     		// Sortie du système
     		  file--;
     		  timer = sortie.get(cptS);
-    		  fileAttente.add( timer - 0.01 , file + 1.0 );
-        	  fileAttente.add( timer , file );
+    		  if ( file > this.nbMachine) {
+	    		  fileAttente.add( timer - 0.0001 , file - this.nbMachine + 1.0 );
+	        	  fileAttente.add( timer , file - this.nbMachine );
+    		  } else {
+    			  fileAttente.add( timer , 0 );
+    		  }
         	  
         	  cptS++;
     	  }
       
       } while ( timer < 120 );
       
-      /*// // Calcul du temps moyen dans le système
-      double moyenneTAS = 0.0;
-      for ( int i = 0; i < cptS; i++) {
-    	  moyenneTAS += sortie.get(i) - listArrivee.get(i);
-      } 
-      moyenneTAS /= cptS;
-      System.out.println("Temps moyen dans le système : " + moyenneTAS + " minutes.");  
       
+      /*
       // Calcul de la moyenne de temps entre evenement
       double moyenneIntervalle = listArrivee.get(0);
       for ( int i = 1; i < cptA; i++) {
