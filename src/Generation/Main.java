@@ -30,7 +30,7 @@ public class Main extends ApplicationFrame {
       JFreeChart xylineChart = ChartFactory.createXYLineChart(
          chartTitle ,
          "Temps (min)" ,
-         "Evenement" ,
+         "Nombre de zPersonne" ,
          createDataset() ,
          PlotOrientation.VERTICAL ,
          true , true , false);
@@ -51,7 +51,7 @@ public class Main extends ApplicationFrame {
    
    private XYDataset createDataset( ) {
       final XYSeries serie = new XYSeries( "Evenement" );
-      final XYSeries fileAttente = new XYSeries ("Personne dans le système");
+      final XYSeries fileAttente = new XYSeries ("File d'attente");
       
       
       
